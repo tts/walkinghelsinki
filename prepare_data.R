@@ -112,7 +112,6 @@ roads_in_distr_in_area <- st_join(park_roads, distr_in_area)
 roads_in_distr_in_area <- roads_in_distr_in_area %>% 
   select(length_n, length, Name.x)
 
-# TO DO deselect NA columns
 prot_build_in_distr_in_area <- st_join(build, distr_in_area)
 prot_build_in_distr_in_area <- prot_build_in_distr_in_area %>% 
   select(-Description.x, -Description.y, -Name.y)
