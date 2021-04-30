@@ -73,9 +73,7 @@ ui <- fluidPage(
         color: snow;
       }"))
   ),
-  
-  #titlePanel("Park roads, trees, protected buildings, and biking stations in Helsinki"),
-  
+    
   sidebarPanel(
     selectInput(inputId = "target",
                 label = "District",
