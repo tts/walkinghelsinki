@@ -66,7 +66,7 @@ ui <- fluidPage(
   tags$head(
     tags$style(HTML("
       body {
-        background-color: #505050;
+        background-color: #333333;
         color: white;
       },
       .shiny-input-container {
