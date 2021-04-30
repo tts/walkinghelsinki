@@ -1,7 +1,7 @@
 library(shiny)
 library(tidyverse)
 library(leaflet)
-library(gfonts)
+library(sf)
 
 #----------
 # Districts 
@@ -50,8 +50,6 @@ bikestations_in_distr_in_area <- readRDS("bikestations_in_distr_in_area.RDS")
 #-------
 
 ui <- fluidPage(
-  
-  use_font("roboto", "www/css/roboto.css"),
   
   tags$h2(
     HTML("<span style='color:green'>Planted trees,</span> <span style='color:sienna'>park roads,</span> <span style='color:orange'>protected buildings,</span> 
