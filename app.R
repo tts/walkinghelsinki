@@ -1,6 +1,7 @@
 library(shiny)
 library(tidyverse)
 library(leaflet)
+library(gfonts)
 
 #----------
 # Districts 
@@ -8,11 +9,9 @@ library(leaflet)
 
 distr_in_area <- readRDS("distr_in_area.RDS")
 
-distr_in_area <- distr_in_area %>% 
-  sf::st_transform(crs = 4326)
-
 districts <- as.vector(sort(distr_in_area$Name.x))
 
+# Districts in neighbour cities bordering Helsinki
 Espoo_Vantaa <- c("Otaniemi", "Westend", "Ruukinranta", "Mäkkylä",
                   "Lintulaakso", "Uusmäki", "Ylästö", "Tikkurila",
                   "Pakkala", "Koivuhaka", "Viertola", "Kuninkaala",
@@ -20,37 +19,31 @@ Espoo_Vantaa <- c("Otaniemi", "Westend", "Ruukinranta", "Mäkkylä",
 
 districts <- districts[!districts %in% Espoo_Vantaa]
 
+# Helsinki land area for the 'Where are we?' map 
 hki <- distr_in_area %>% 
   filter(!Name.x %in% c("Ulkosaaret", "Miessaari", "Aluemeri",
-                        "Länsisaaret", "Itäsaaret"))
+                        "Länsisaaret", "Itäsaaret", Espoo_Vantaa))
 
 #------------------------
 # Park roads and trees
 #------------------------
 
 roads_in_distr_in_area <- readRDS("roads_in_distr_in_area.RDS")
-roads_in_distr_in_area <- roads_in_distr_in_area %>% 
-  sf::st_transform(crs = 4326) 
 
 trees_in_distr_in_area <- readRDS("trees_in_distr_in_area.RDS")
-trees_in_distr_in_area <- trees_in_distr_in_area %>% 
-  sf::st_transform(crs = 4326)
 
 #---------------------
 # Protected buildings
 #---------------------
 
 prot_build_in_distr_in_area <- readRDS("prot_build_in_distr_in_area.RDS")
-prot_build_in_distr_in_area <- prot_build_in_distr_in_area %>% 
-  sf::st_transform(crs = 4326)
 
 #-------------------
-# City Bike stations
+# City bike stations
 #-------------------
 
 bikestations_in_distr_in_area <- readRDS("bikestations_in_distr_in_area.RDS")
-bikestations_in_distr_in_area <- bikestations_in_distr_in_area %>% 
-  sf::st_transform(crs = 4326)
+
 
 #-------
 # App
@@ -58,9 +51,11 @@ bikestations_in_distr_in_area <- bikestations_in_distr_in_area %>%
 
 ui <- fluidPage(
   
+  use_font("roboto", "www/css/roboto.css"),
+  
   tags$h2(
-    HTML("<span style='color:sienna'>Park roads,</span> <span style='color:green'>planted trees,</span> <span style='color:orange'>protected buildings,</span> 
-         and <span style='color:yellow'>biking stations</span> in Helsinki")
+    HTML("<span style='color:green'>Planted trees,</span> <span style='color:sienna'>park roads,</span> <span style='color:orange'>protected buildings,</span> 
+         and <span style='color:yellow'>city bike stations</span> in Helsinki")
   ),
   
   tags$head(
@@ -71,15 +66,22 @@ ui <- fluidPage(
       },
       .shiny-input-container {
         color: snow;
-      }"))
+      }
+      label.control-label {
+        color: #5f9ea0;
+      }"
+    ))
   ),
-    
+  
+  
   sidebarPanel(
     selectInput(inputId = "target",
                 label = "District",
                 choices = districts,
                 selected = "Kluuvi"),
     plotOutput("hist"),
+    HTML("<p></p><p><span style='color:black'>Click a station to find out the number of available bikes. Note that
+         there are a few new stations opening up in summer 2021 with no info yet.</span></p>"),
     width = 3
   ),
   
