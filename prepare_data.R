@@ -1,6 +1,5 @@
 library(sf)
 library(tidyverse)
-library(gfonts)
 
 #-----
 # Area
@@ -127,12 +126,3 @@ write_rds(roads_in_distr_in_area, "roads_in_distr_in_area.RDS")
 write_rds(prot_build_in_distr_in_area, "prot_build_in_distr_in_area.RDS")
 write_rds(bikestations_in_distr_in_area, "bikestations_in_distr_in_area.RDS")
 
-#------------
-# Google font
-#------------
-
-setup_font(
-  id = "roboto",
-  output_dir = "www",
-  variants = "regular"
-)
