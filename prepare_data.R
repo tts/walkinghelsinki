@@ -29,7 +29,7 @@ distr_in_area <- st_join(st_buffer(areas_small, dist = 0),
                     left = FALSE, largest = TRUE)
 
 distr_in_area <- distr_in_area %>% 
-  sf::st_transform(crs = 4326)
+  st_transform(crs = 4326)
 
 write_rds(distr_in_area, "distr_in_area.RDS")
 
@@ -52,9 +52,7 @@ park_roads <- roads %>%
 park_roads <- park_roads %>%
   mutate(length_n = as.numeric(ceiling(st_length(.))),
          length = paste0(length_n, " m")) %>% 
-  sf::st_transform(crs = 4326)
-
-write_rds(park_roads, "park_roads.RDS")
+  st_transform(crs = 4326)
 
 #--------------
 # Planted trees
@@ -68,9 +66,7 @@ trees <- st_read(hki_trees_wfs)
 trees <- trees %>% 
   mutate(nimi = paste0(stringr::str_to_sentence(suomenknimi), " (", suku, " ", laji, ")")) %>% 
   select(nimi, kokoluokka) %>% 
-  sf::st_transform(crs = 4326)
-
-saveRDS(trees, "trees.RDS")
+  st_transform(crs = 4326)
 
 #-----------------------
 # Protected buildings
@@ -79,13 +75,19 @@ saveRDS(trees, "trees.RDS")
 baseurl <- "https://kartta.hel.fi/ws/geoserver/avoindata/wfs?request=GetFeature&service=WFS&version=2.0.0"
 type <- "avoindata:Asemakaavoissa_suojellut_rakennukset_alue"
 request <- paste0(baseurl, "&typeName=", type, "&outputFormat=json")
-build <- st_read(request, stringsAsFactors = FALSE)
-build <- st_as_sf(build)
+buildp <- st_read(request, stringsAsFactors = FALSE)
+buildp <- st_as_sf(buildp)
 
-build <- build %>% 
-  select(osoite, voimaantulo_pvm, laji, starts_with("kaavaselitys")) %>% 
-  sf::st_transform(crs = 4326)
+build <- buildp %>% 
+  select(osoite, laji) %>% 
+  st_transform(crs = 4326)
 
+build_stats <- build %>% 
+  st_drop_geometry() %>% 
+  group_by(laji) %>% 
+  summarise(count = n()) %>% 
+  arrange(desc(count))
+  
 #--------------------
 # City bike stations
 #--------------------
